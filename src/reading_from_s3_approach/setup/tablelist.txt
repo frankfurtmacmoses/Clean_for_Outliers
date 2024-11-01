@@ -1,0 +1,2 @@
+tpc.ESG.CTGout.INV_2000_Transaction
+tpc.ESG.CTGout.INV_4000_Customer

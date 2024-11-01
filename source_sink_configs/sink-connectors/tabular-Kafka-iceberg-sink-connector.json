@@ -1,0 +1,43 @@
+
+
+
+{
+"__comment": ["Author: Frankfurt Ogunfunminiyi: ",
+                "Email: frankfurt.ogunfunminiyi@shellenergy.com",
+                "Date: 2024-04-01",
+                "Version: 1.0.1"
+            ],
+"connector.class": "io.tabular.iceberg.connect.IcebergSinkConnector",
+"tasks.max": "20",
+"errors.log.include.messages": "true",
+"errors.log.enable": "true",
+
+
+"iceberg.catalog.catalog-impl": "org.apache.iceberg.aws.glue.GlueCatalog",
+"iceberg.catalog.warehouse": "s3://mp2appsrvdevshell/esgdb/my_warehouse_dir",
+"iceberg.catalog.io-impl": "org.apache.iceberg.aws.s3.S3FileIO",  
+"iceberg.catalog.client.region": "us-east-1",      
+
+"iceberg.tables.upsert-mode-enabled": "true",
+"iceberg.tables.schema-case-insensitive": "true",
+"iceberg.tables.auto-create-enabled": "true",
+"iceberg.tables.auto-create-props.format-version": "2",
+"iceberg.tables.auto-create-props.write.target-file-size-bytes": "134217728",
+"iceberg.tables.auto-create-props.parquet.compression-codec": "snappy",
+"iceberg.tables.auto-create-props.parquet.page-size-bytes": "1048576",
+"iceberg.tables.default-id-columns": "FileID,FileSequence",
+"iceberg.tables.default-partition-by": "FileID,year(TransactionDate)",
+"iceberg.table.ESG.CTGout.INV_4000_Customer.partition-by": "CustomerIdentificationNumber", 
+"topics": "tpc.ESG.CTGout.INV_2000_Transaction,tpc.ESG.CTGout.INV_4000_Customer", 
+"iceberg.tables": "ESG.CTGout.INV_2000_Transaction,ESG.CTGout.INV_4000_Customer",
+
+
+"key.converter": "org.apache.kafka.connect.json.JsonConverter",
+"value.converter": "org.apache.kafka.connect.json.JsonConverter",
+"key.converter.schemas.enable": "false",
+"value.converter.schemas.enable": "false",
+
+"flush.size": "100",
+"rotate.interval.ms": "60000"
+
+}

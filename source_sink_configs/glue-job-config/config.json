@@ -1,0 +1,27 @@
+{
+    "catalog": "glue_catalog",
+    "database": "esgdb",
+    "bucket_name" : "s3://mp2appsrvdevshell",
+    "topic_dir": "esg",
+    "topic_prifix": "tpc",
+    "bootstrap_servers": "b-4.seshybdev.bvj0c2.c20.kafka.us-east-1.amazonaws.com:9098,b-1.seshybdev.bvj0c2.c20.kafka.us-east-1.amazonaws.com:9098,b-2.seshybdev.bvj0c2.c20.kafka.us-east-1.amazonaws.com:9098",
+    "job_properties" : {
+        "TempDir": "s3://mp2appsrvdevshell",
+        "JobBookmarksEncryptionMode": "DISABLED",
+        "EnableMetrics": "true",
+        "MaxRetries": "0",
+        "NumberOfWorkers": "10",
+        "WorkerType": "G.1X",
+        "Timeout": "432000",  
+        "GlueVersion": "2.0",
+        "MaxCapacity": "10.0",
+        "MaxConcurrentRuns": "10"
+    },
+    "connection_config": {
+        "connection_name": "my-kafka-connection",
+        "vpc_id": "vpc-051aff6fc61f9964e",
+        "security_group_id": "kafka-ses-hyb-dev-20230907160337597200000001",
+        "subnet_id": "sg-0f47a5b1af6830287",
+        "kms_key_id" : ""
+    }
+}

@@ -1,0 +1,48 @@
+#!/bin/bash
+
+ROLE_NAME="AWSGlueServiceRole"
+GLUE_VERSION="4.0"
+CATALOG_DB="esgdb"
+LOG_GROUP="esg_job_log"
+SCRIPT_LOCATION="s3://aws-glue-assets-802803944024-us-east-1/scripts/"
+SPARK_UI_LOGS_PATH="s3://aws-glue-assets-802803944024-us-east-1/sparkHistoryLogs/"
+TEMPORARY_PATH="s3://aws-glue-assets-802803944024-us-east-1/temporary/"
+MAX_CONCURRENT_RUNS=1
+DATA_LAKE_FORMAT="ICEBERG"
+
+for i in {1..10}; do
+  JOB_NAME="st${i}"
+  SCRIPT_PATH="${SCRIPT_LOCATION}${JOB_NAME}.py"
+
+  aws glue create-job \
+    --name ${JOB_NAME} \
+    --role ${ROLE_NAME} \
+    --command "Name=glueetl,ScriptLocation=${SCRIPT_PATH},PythonVersion=3" \
+    --default-arguments "--job-language=python --dataLakeFormat=${DATA_LAKE_FORMAT}" \
+    --glue-version ${GLUE_VERSION} \
+    --max-concurrent-runs ${MAX_CONCURRENT_RUNS} \
+    --number-of-workers 2 \
+    --worker-type G.1X \
+    --timeout 2880 \
+    --max-retries 1 \
+    --connections "" \
+    --notification-property "NotifyDelayAfter=1" \
+    --execution-property "MaxConcurrentRuns=${MAX_CONCURRENT_RUNS}" \
+    --log-uri ${SPARK_UI_LOGS_PATH} \
+    --allocated-capacity 10 \
+    --timeout 60 \
+    --default-arguments "{\"--enable-metrics\":\"\",\"--TempDir\":\"${TEMPORARY_PATH}\",\"--enable-spark-ui\":\"true\",\"--job-bookmark-option\":\"job-bookmark-enable\",\"--catalog-database\":\"${CATALOG_DB}\"}" \
+    --tags 'project=esg' \
+    --max-capacity 10 \
+    --worker-type Standard \
+    --security-configuration 'mySecurityConfig' \
+    --default-arguments '{"--TempDir":"${TEMPORARY_PATH}","--enable-metrics":"true"}' \
+    --glue-version ${GLUE_VERSION} \
+    --number-of-workers 2 \
+    --worker-type 'G.1X' \
+    --output "$output"
+
+  aws events put-rule --name "glue-job-schedule-${JOB_NAME}" --schedule-expression "rate(15 minutes)"
+
+  aws events put-targets --rule "glue-job-schedule-${JOB_NAME}" --targets "Id"="1","Arn"="arn:aws:glue:us-east-1:802803944024:job/${JOB_NAME}"
+done
